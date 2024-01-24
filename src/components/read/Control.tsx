@@ -1,4 +1,3 @@
-import type React from "react";
 import {
   PlayCircleIcon,
   PlayPauseIcon,
@@ -8,10 +7,11 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { formatTime } from "../../utils/helper";
 import { useState } from "react";
+import { State } from "@/hooks/usePlayer";
 
 interface ButtonProps {
   status: string;
-  // player: corePlayer;
+  player: Howl;
 }
 
 const Buttons = (props: ButtonProps) => {
@@ -22,13 +22,15 @@ const Buttons = (props: ButtonProps) => {
       </button>
       <button
         className="btn btn-circle btn-ghost bg-transparent"
-        // onClick={() => {
-        //   if (props.status === "play") {
-        //     props.player.pause();
-        //   } else if (props.status === "pause") {
-        //     props.player.play();
-        //   }
-        // }}
+        onClick={() => {
+          if (props.status === "play") {
+            console.log("pause");
+            props.player.pause();
+          } else if (props.status === "pause") {
+            console.log("play");
+            props.player.play();
+          }
+        }}
       >
         {props.status == "play" ? (
           <PlayPauseIcon className="h-12 w-12 text-white" />
@@ -65,14 +67,19 @@ const TimeLine = () => {
   );
 };
 
-export const Control: React.FC = () => {
+interface ControlProps {
+  player: Howl,
+  state: State
+}
+
+export const Control = (props: ControlProps) => {
   return (
     <div className="w-full h-20 fixed left-0 bottom-0 flex flex-col justify-center">
       <div className="w-full absolute left-0 top-0">
         <TimeLine />
       </div>
       <div className="flex justify-center items-center my-auto">
-        <Buttons status="pause" />
+        <Buttons player={props.player} status={props.state.status} />
       </div>
     </div>
   );
