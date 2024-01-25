@@ -3,8 +3,15 @@ import { Media } from "@/components/read/Media";
 import { Text } from "@/components/read/Text";
 import { Control } from "@/components/read/Control";
 import { Dict } from "@/components/read/Dict";
+import usePlayer from "@/hooks/usePlayer";
+import demoMp3 from "@/assets/Spirited Away.mp3"
+
+
+const urls = [demoMp3]
 
 const App: React.FC = () => {
+  const {sound, exposedData} = usePlayer(urls);
+
   return (
     <>
       <div className="flex flex-col h-screen">
@@ -19,7 +26,7 @@ const App: React.FC = () => {
             <Dict />
           </div>
         </div>
-        <Control />
+        <Control player={sound} state={exposedData}/>
       </div>
     </>
   );

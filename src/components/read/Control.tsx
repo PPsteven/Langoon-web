@@ -1,4 +1,3 @@
-import type React from "react";
 import {
   PlayCircleIcon,
   PlayPauseIcon,
@@ -7,11 +6,11 @@ import {
 } from "@heroicons/react/24/solid";
 import { Slider } from "@/components/ui/slider";
 import { formatTime } from "../../utils/helper";
-import { useState } from "react";
+import { State } from "@/hooks/usePlayer";
 
 interface ButtonProps {
   status: string;
-  // player: corePlayer;
+  player: Howl;
 }
 
 const Buttons = (props: ButtonProps) => {
@@ -22,13 +21,15 @@ const Buttons = (props: ButtonProps) => {
       </button>
       <button
         className="btn btn-circle btn-ghost bg-transparent"
-        // onClick={() => {
-        //   if (props.status === "play") {
-        //     props.player.pause();
-        //   } else if (props.status === "pause") {
-        //     props.player.play();
-        //   }
-        // }}
+        onClick={() => {
+          if (props.status === "play") {
+            console.log("pause");
+            props.player.pause();
+          } else if (props.status === "pause") {
+            console.log("play");
+            props.player.play();
+          }
+        }}
       >
         {props.status == "play" ? (
           <PlayPauseIcon className="h-12 w-12 text-white" />
@@ -43,36 +44,49 @@ const Buttons = (props: ButtonProps) => {
   );
 };
 
-// interface SliderProps {
-//   onChange: (per: number) => void;
-// }
+interface TimeLineProps {
+  seek: number;
+  duration: number;
+  onChange: (per: number) => void;
+}
 
-const TimeLine = () => {
-  const [value, setValue] = useState([0]);
-
+const TimeLine = (props: TimeLineProps) => {
   return (
     <div className="flex flex-col w-full my-0 gap-2">
-      {/* <div className="text-white text-left">{formatTime(10)}</div> */}
+      <div className="absolute left-0 -top-12 text-white text-left">{formatTime(props.seek)}</div>
       <Slider
-        value={value}
+        value={[props.seek / props.duration * 100]}
         max={100}
         step={1}
         onValueChange={(e) => {
-          setValue(e);
+          props.onChange(e[0]/100);
         }}
+        // onValueCommit={(e) => {
+        //   console.log(e);
+        //   // props.onChange(e[0]/100);
+        // }}
       />
     </div>
   );
 };
 
-export const Control: React.FC = () => {
+interface ControlProps {
+  player: Howl;
+  state: State;
+}
+
+export const Control = (props: ControlProps) => {
+  const onChange = (per: number) => {
+    props.player.seek(per * props.state.duration);
+  };
+
   return (
     <div className="w-full h-20 fixed left-0 bottom-0 flex flex-col justify-center">
       <div className="w-full absolute left-0 top-0">
-        <TimeLine />
+        <TimeLine onChange={onChange} seek={props.state.seek} duration={props.state.duration}/>
       </div>
       <div className="flex justify-center items-center my-auto">
-        <Buttons status="pause" />
+        <Buttons player={props.player} status={props.state.status} />
       </div>
     </div>
   );

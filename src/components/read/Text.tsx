@@ -93,7 +93,7 @@ export const Text = () => {
     <div className="w-full h-full box-border overflow-y-auto bg-none">
       <div className="flex flex-col gap-5 ml-4 font-bold text-2xl text-start">
         {lines.map((line, i) => {
-          return <Line obj={line} isActive={false} lineNo={i} />;
+          return <Line key={i} obj={line} isActive={false} lineNo={i} />;
         })}
       </div>
     </div>
