@@ -1,6 +1,6 @@
 import {
   PlayCircleIcon,
-  PlayPauseIcon,
+  PauseIcon,
   BackwardIcon,
   ForwardIcon,
 } from "@heroicons/react/24/solid";
@@ -32,7 +32,7 @@ const Buttons = (props: ButtonProps) => {
         }}
       >
         {props.status == "play" ? (
-          <PlayPauseIcon className="h-12 w-12 text-white" />
+          <PauseIcon className="h-12 w-12 text-white" />
         ) : (
           <PlayCircleIcon className="h-12 w-12 text-white" />
         )}

@@ -4,7 +4,7 @@ import { Text } from "@/components/read/Text";
 import { Control } from "@/components/read/Control";
 import { Dict } from "@/components/read/Dict";
 import usePlayer from "@/hooks/usePlayer";
-import demoMp3 from "@/assets/Spirited Away.mp3"
+import demoMp3 from "@/assets/Scent_Of_A_Women_En.mp3"
 
 
 const urls = [demoMp3]
@@ -20,7 +20,7 @@ const App: React.FC = () => {
             <Media />
           </div>
           <div className="w-1/2 h-screen mt-0 pt-20 pb-40">
-            <Text />
+            <Text seek={exposedData.seek}/>
           </div>
           <div className="w-1/4">
             <Dict />
