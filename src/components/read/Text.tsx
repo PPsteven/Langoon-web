@@ -1,40 +1,67 @@
 import classNames from "classnames";
 import demoScript from "@/assets/scent_of_a_woman.json";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { LineObj } from "@/store/media";
 
+import {
+  ViewfinderCircleIcon,
+} from "@heroicons/react/24/solid";
+import { PlayerContext } from "@/store";
 interface LineProps {
   obj: LineObj;
   isActive: boolean;
   lineNo: number;
 }
 
-const Line = (props: LineProps) => {
+const PlayCurrentButton = (props: { toLine: () => void }) => {
   return (
-    <div className={"box-border px-12 flex flex-col gap-2"}>
-      <span
-        className={classNames(
-          "font-bold text-2xl text-start",
-          props.isActive ? "text-white shadow-xl active" : "text-gray-500"
-        )}
-        id={"line" + props.lineNo}
-      >
-        {props.obj.raw}
-      </span>
-      <span
-        className={classNames(
-          "text-xl text-start",
-          props.isActive ? "text-white shadow-xl active" : "text-gray-500"
-        )}
-      >
-        {props.obj.translation}
-      </span>
+    <button
+      className="btn btn-circle btn-ghost bg-transparent"
+      onClick={props.toLine}
+    >
+      <ViewfinderCircleIcon className="h-6 w-6 text-white" />
+    </button>
+  );
+};
+
+const Line = (props: LineProps) => {
+  const { sound } = useContext(PlayerContext)!;
+
+  const toLine = () => {
+    sound.seek(props.obj.start);
+  };
+
+  return (
+    <div className={"box-border px-12 relative"}>
+      <div className="absolute right-0 flex flex-row justify-center ml-1">
+        <PlayCurrentButton toLine={toLine} />
+      </div>
+      <div className="w-full h-full flex flex-col gap-2">
+        <span
+          className={classNames(
+            "font-bold text-2xl text-start",
+            props.isActive ? "text-white shadow-xl active" : "text-gray-500"
+          )}
+          id={"line" + props.lineNo}
+        >
+          {props.obj.raw}
+        </span>
+        <span
+          className={classNames(
+            "text-xl text-start",
+            props.isActive ? "text-white shadow-xl active" : "text-gray-500"
+          )}
+        >
+          {props.obj.translation}
+        </span>
+      </div>
     </div>
   );
 };
 
 export interface TextProps {
   seek: number;
+  player: Howl;
 }
 
 export const Text = (props: TextProps) => {
@@ -56,7 +83,7 @@ export const Text = (props: TextProps) => {
       return line.start <= props.seek && props.seek <= line.end;
     });
     setCurIndex(index);
-  }, [props.seek]);
+  }, [props.seek, lines]);
 
   useEffect(() => {
     const active = document.querySelector(`.active`);

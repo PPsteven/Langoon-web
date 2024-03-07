@@ -6,15 +6,12 @@ import {
 } from "@heroicons/react/24/solid";
 import { Slider } from "@/components/ui/slider";
 import { formatTime } from "../../utils/helper";
-import { State } from "@/hooks/usePlayer";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { PlayerContext } from "@/store";
 
-interface ButtonProps {
-  status: string;
-  player: Howl;
-}
+const Buttons = () => {
+  const { sound: player, exposedData: state } = useContext(PlayerContext)!;
 
-const Buttons = (props: ButtonProps) => {
   return (
     <div className="flex flex-row justify-center">
       <button className="btn btn-circle btn-ghost bg-transparent">
@@ -23,14 +20,14 @@ const Buttons = (props: ButtonProps) => {
       <button
         className="btn btn-circle btn-ghost bg-transparent"
         onClick={() => {
-          if (props.status === "play") {
-            props.player.pause();
-          } else if (props.status === "pause") {
-            props.player.play();
+          if (state.status === "play") {
+            player.pause();
+          } else if (state.status === "pause") {
+            player.play();
           }
         }}
       >
-        {props.status == "play" ? (
+        {state.status == "play" ? (
           <PauseIcon className="h-12 w-12 text-white" />
         ) : (
           <PlayCircleIcon className="h-12 w-12 text-white" />
@@ -86,14 +83,11 @@ const Progress = ({ seek, duration, onChange }: ProgressProps) => {
   );
 };
 
-interface ControlProps {
-  player: Howl;
-  state: State;
-}
+export const Control = () => {
+  const { sound, exposedData: state} = useContext(PlayerContext)!;
 
-export const Control = (props: ControlProps) => {
   const onChange = (val: number) => {
-    props.player.seek((val / 100) * props.state.duration);
+    sound.seek((val / 100) * state.duration);
   };
 
   return (
@@ -101,12 +95,12 @@ export const Control = (props: ControlProps) => {
       <div className="w-full h-4 relative left-0 -top-2 justify-center">
         <Progress
           onChange={onChange}
-          seek={props.state.seek}
-          duration={props.state.duration}
+          seek={state.seek}
+          duration={state.duration}
         />
       </div>
       <div className="flex justify-center items-center my-auto">
-        <Buttons player={props.player} status={props.state.status} />
+        <Buttons/>
       </div>
     </div>
   );
