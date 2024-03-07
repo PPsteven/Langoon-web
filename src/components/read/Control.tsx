@@ -7,6 +7,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { formatTime } from "../../utils/helper";
 import { State } from "@/hooks/usePlayer";
+import { useEffect, useState } from "react";
 
 interface ButtonProps {
   status: string;
@@ -23,10 +24,8 @@ const Buttons = (props: ButtonProps) => {
         className="btn btn-circle btn-ghost bg-transparent"
         onClick={() => {
           if (props.status === "play") {
-            console.log("pause");
             props.player.pause();
           } else if (props.status === "pause") {
-            console.log("play");
             props.player.play();
           }
         }}
@@ -44,27 +43,38 @@ const Buttons = (props: ButtonProps) => {
   );
 };
 
-interface TimeLineProps {
+interface ProgressProps {
   seek: number;
   duration: number;
   onChange: (per: number) => void;
 }
 
-const TimeLine = (props: TimeLineProps) => {
+const Progress = ({ seek, duration, onChange }: ProgressProps) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    if (isDragging) return;
+    setValue((seek / duration) * 100);
+  }, [seek, duration, isDragging]);
+
   return (
-    <div className="flex flex-col w-full my-0 gap-2">
-      <div className="absolute left-0 -top-12 text-white text-left">{formatTime(props.seek)}</div>
+    <div className="flex flex-col w-full h-full my-0 gap-2 cursor-pointer">
+      <div className="absolute left-0 -top-12 text-white text-left">
+        {formatTime(seek)}
+      </div>
       <Slider
-        value={[props.seek / props.duration * 100]}
+        value={[value]}
         max={100}
         step={1}
         onValueChange={(e) => {
-          props.onChange(e[0]/100);
+          setValue(e[0]);
+          setIsDragging(true);
         }}
-        // onValueCommit={(e) => {
-        //   console.log(e);
-        //   // props.onChange(e[0]/100);
-        // }}
+        onValueCommit={(e) => {
+          onChange(e[0]);
+          setIsDragging(false);
+        }}
       />
     </div>
   );
@@ -76,14 +86,18 @@ interface ControlProps {
 }
 
 export const Control = (props: ControlProps) => {
-  const onChange = (per: number) => {
-    props.player.seek(per * props.state.duration);
+  const onChange = (val: number) => {
+    props.player.seek((val / 100) * props.state.duration);
   };
 
   return (
-    <div className="w-full h-20 fixed left-0 bottom-0 flex flex-col justify-center">
-      <div className="w-full absolute left-0 top-0">
-        <TimeLine onChange={onChange} seek={props.state.seek} duration={props.state.duration}/>
+    <div className="w-full h-18 fixed left-0 bottom-0 flex flex-col justify-center bg-red-600">
+      <div className="w-full h-4 relative left-0 -top-2 justify-center bg-blue-600">
+        <Progress
+          onChange={onChange}
+          seek={props.state.seek}
+          duration={props.state.duration}
+        />
       </div>
       <div className="flex justify-center items-center my-auto">
         <Buttons player={props.player} status={props.state.status} />

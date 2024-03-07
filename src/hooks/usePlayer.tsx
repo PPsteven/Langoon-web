@@ -23,21 +23,18 @@ export default function usePlayer(urls: string[]) {
     seek: 0,
     duration: 0,
     percent: 0,
-    status: "pause",
+    status: "loading",
     err: "",
   });
   const soundRef = useRef<Howl | undefined>(undefined);
   const intervalRef = useRef<number>(0);
 
   const resetInterval = () => {
-    console.log("interval cur", intervalRef.current)
     intervalRef.current && clearInterval(intervalRef.current);
     intervalRef.current = window.setInterval(() => {
       const seek = soundRef.current?.seek() || 0;
       const percent = (seek / soundRef.current!.duration()) * 100 || 0;
       setState((prev) => ({ ...prev, seek: seek, percent: percent }));
-      console.log("cur seek", seek);
-      console.log("sound", soundRef.current?.playing())
     }, 200);
   };
 
@@ -47,7 +44,6 @@ export default function usePlayer(urls: string[]) {
         src: urls,
         html5: true,
         preload: true, // Donwload file to improve performance true
-        onseek: () => {},
       });
     }
 
@@ -68,16 +64,22 @@ export default function usePlayer(urls: string[]) {
     unListens.push(
       addHowlerListener(soundRef.current, "pause", () => {
         console.log("pause");
+        console.log("sound", intervalRef.current);
         clearInterval(intervalRef.current);
         setState((state) => ({ ...state, status: "pause" }));
       })
     );
     unListens.push(
       addHowlerListener(soundRef.current, "seek", () => {
-        resetInterval();
         console.log("seek");
+        resetInterval();
       })
-    )
+    );
+    unListens.push(
+      addHowlerListener(soundRef.current, "load", () => {
+        console.log("load");
+      })
+    );
     unListens.push(
       addHowlerListener(soundRef.current, "loaderror", () => {
         console.log("load error");

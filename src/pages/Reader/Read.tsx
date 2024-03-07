@@ -19,6 +19,7 @@ const App: React.FC = () => {
           <div className="w-1/4">
             <Media />
           </div>
+          {/* TODO: 适配宽度和高度 */}
           <div className="w-1/2 h-screen mt-0 pt-20 pb-40">
             <Text seek={exposedData.seek}/>
           </div>
