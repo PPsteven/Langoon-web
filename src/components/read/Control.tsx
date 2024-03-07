@@ -59,11 +59,17 @@ const Progress = ({ seek, duration, onChange }: ProgressProps) => {
   }, [seek, duration, isDragging]);
 
   return (
-    <div className="flex flex-col w-full h-full my-0 gap-2 cursor-pointer">
-      <div className="absolute left-0 -top-12 text-white text-left">
-        {formatTime(seek)}
-      </div>
+    <div className="w-full h-full flex flex-col justify-center cursor-pointer">
+      <div className="w-full absolute left-0 -top-5 text-white text-left flex flex-row justify-between">
+          <span>
+            {formatTime(seek)}
+          </span>
+          <span>
+            {formatTime(duration)}
+          </span>
+        </div>
       <Slider
+        className="media-slider h-full"
         value={[value]}
         max={100}
         step={1}
@@ -91,8 +97,8 @@ export const Control = (props: ControlProps) => {
   };
 
   return (
-    <div className="w-full h-18 fixed left-0 bottom-0 flex flex-col justify-center bg-red-600">
-      <div className="w-full h-4 relative left-0 -top-2 justify-center bg-blue-600">
+    <div className="w-full h-18 fixed left-0 bottom-0 flex flex-col justify-center">
+      <div className="w-full h-4 relative left-0 -top-2 justify-center">
         <Progress
           onChange={onChange}
           seek={props.state.seek}
