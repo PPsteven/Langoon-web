@@ -1,0 +1,7 @@
+.line .btn {
+    visibility: hidden;
+}
+
+.line:hover .btn {
+    visibility: visible;
+}

@@ -3,10 +3,11 @@ import demoScript from "@/assets/scent_of_a_woman.json";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { LineObj } from "@/store/media";
 
-import {
-  ViewfinderCircleIcon,
-} from "@heroicons/react/24/solid";
+import { ViewfinderCircleIcon } from "@heroicons/react/24/solid";
 import { PlayerContext } from "@/store";
+
+import "./Text.css";
+
 interface LineProps {
   obj: LineObj;
   isActive: boolean;
@@ -16,7 +17,7 @@ interface LineProps {
 const PlayCurrentButton = (props: { toLine: () => void }) => {
   return (
     <button
-      className="btn btn-circle btn-ghost bg-transparent"
+      className="play-current-btn btn btn-circle btn-ghost bg-transparent"
       onClick={props.toLine}
     >
       <ViewfinderCircleIcon className="h-6 w-6 text-white" />
@@ -32,8 +33,8 @@ const Line = (props: LineProps) => {
   };
 
   return (
-    <div className={"box-border px-12 relative"}>
-      <div className="absolute right-0 flex flex-row justify-center ml-1">
+    <div className={"box-border px-14 relative line"}>
+      <div className={"absolute left-0 flex flex-row justify-center ml-1"}>
         <PlayCurrentButton toLine={toLine} />
       </div>
       <div className="w-full h-full flex flex-col gap-2">
