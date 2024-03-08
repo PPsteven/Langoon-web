@@ -53,7 +53,9 @@ const Progress = ({ seek, duration, onChange }: ProgressProps) => {
   useEffect(() => {
     if (isDragging) return;
     setValue((seek / duration) * 100);
-  }, [seek, duration, isDragging]);
+    // 注意: 这里不能添加 isDragging 依赖, 不然进度条在isDragging变动的时候会发生突然的跳变。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seek, duration]);
 
   return (
     <div className="w-full h-full flex flex-col justify-center cursor-pointer">
