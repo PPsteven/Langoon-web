@@ -3,7 +3,7 @@ import demoSubtitles from "@/assets/demo.json";
 import { useContext, useEffect, useMemo, useState } from "react";
 
 import { ViewfinderCircleIcon } from "@heroicons/react/24/solid";
-import { PlayerContext } from "@/store";
+import { PlayerContext, SearchContext } from "@/store";
 
 import "./Text.css";
 // import { useLoading } from "@/hooks/useFetch";
@@ -29,16 +29,25 @@ const PlayCurrentButton = (props: { toLine: () => void }) => {
 };
 
 const Word = (props: {token: Token}) => {
+  const { setSearch } = useContext(SearchContext)!;
+
+  const handleSearch = () => {
+    setSearch(props.token.text);
+  }
+
   return (
     <>
       {
       isWord(props.token) ?
-        <span className={classNames(
-          "underline border-transparent hover:decoration-red-500 hover:text-red-500",
-          "cursor-pointer")}>
-          {props.token.text}
-        </span> :
-      <>{props.token.text}</>
+        <button onClick={handleSearch}>
+          <span className={classNames(
+            "underline border-transparent hover:decoration-red-500 hover:text-red-500",
+            "cursor-pointer")}>
+            {props.token.text}
+          </span>
+        </button>
+         :
+        <>{props.token.text}</>
       }
     </>
   )

@@ -7,6 +7,15 @@ export interface Token {
     whitespace: string;
 }
 
+export function isWord(token: Token): boolean {
+   if (token.pos === "PUNCT" ||
+       token.pos === "PART" || 
+       token.pos === "NUM") {
+        return false;
+   }
+   return true;
+}
+
 export type Tokens = Token[][];
 
 export type TokenResp = Resp<Tokens>;
