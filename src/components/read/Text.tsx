@@ -9,7 +9,7 @@ import "./Text.css";
 // import { useLoading } from "@/hooks/useFetch";
 import { getTokenize } from "@/utils/api";
 import { handleRespWithNotifySuccess } from "@/utils/handle_resp";
-import { Sentence } from "@/types/nlp";
+import { Sentence, Token, isWord } from "@/types/nlp";
 
 interface SentProps {
   data: Sentence;
@@ -27,6 +27,22 @@ const PlayCurrentButton = (props: { toLine: () => void }) => {
     </button>
   );
 };
+
+const Word = (props: {token: Token}) => {
+  return (
+    <>
+      {
+      isWord(props.token) ?
+        <span className={classNames(
+          "underline border-transparent hover:decoration-red-500 hover:text-red-500",
+          "cursor-pointer")}>
+          {props.token.text}
+        </span> :
+      <>{props.token.text}</>
+      }
+    </>
+  )
+}
 
 const Sent = (props: SentProps) => {
   const { sound } = useContext(PlayerContext)!;
@@ -52,7 +68,7 @@ const Sent = (props: SentProps) => {
             {props.data.tokens.map((token) => {
               return (
                 <>
-                  <span>{token.text}</span>
+                  <Word token={token}/>
                   {token.whitespace}
                 </>
               )
