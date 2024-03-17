@@ -1,17 +1,20 @@
 import classNames from "classnames";
-import demoScript from "@/assets/scent_of_a_woman.json";
+import demoSubtitles from "@/assets/demo.json";
 import { useContext, useEffect, useMemo, useState } from "react";
-import { LineObj } from "@/store/media";
 
 import { ViewfinderCircleIcon } from "@heroicons/react/24/solid";
 import { PlayerContext } from "@/store";
 
 import "./Text.css";
+// import { useLoading } from "@/hooks/useFetch";
+import { getTokenize } from "@/utils/api";
+import { handleRespWithNotifySuccess } from "@/utils/handle_resp";
+import { Sentence } from "@/types/nlp";
 
-interface LineProps {
-  obj: LineObj;
+interface SentProps {
+  data: Sentence;
   isActive: boolean;
-  lineNo: number;
+  rowNo: number;
 }
 
 const PlayCurrentButton = (props: { toLine: () => void }) => {
@@ -25,66 +28,83 @@ const PlayCurrentButton = (props: { toLine: () => void }) => {
   );
 };
 
-const Line = (props: LineProps) => {
+const Sent = (props: SentProps) => {
   const { sound } = useContext(PlayerContext)!;
 
   const toLine = () => {
-    sound.seek(props.obj.start);
+    sound.seek(props.data.start);
   };
 
   return (
-    <div className={"box-border px-14 relative line"}>
+    <div className={"box-border px-14 line"}>
       <div className={"absolute left-0 flex flex-row justify-center ml-1"}>
         <PlayCurrentButton toLine={toLine} />
       </div>
-      <div className="w-full h-full flex flex-col gap-2">
-        <span
-          className={classNames(
-            "font-bold text-2xl text-start",
-            props.isActive ? "text-white shadow-xl active" : "text-gray-500"
-          )}
-          id={"line" + props.lineNo}
-        >
-          {props.obj.raw}
-        </span>
-        <span
+      <div className="w-full h-full flex flex-col gap-2 p-1 rounded-sm">
+        {props.data.tokens ?
+          <h1
+            className={classNames(
+              "font-bold text-2xl text-start",
+              props.isActive && "text-red-500 active"
+            )}
+            id={"line" + props.rowNo}
+          >
+            {props.data.tokens.map((token) => {
+              return (
+                <>
+                  <span>{token.text}</span>
+                  {token.whitespace}
+                </>
+              )
+            })}
+          </h1> :
+          <h1
+            className={classNames(
+              "font-bold text-2xl text-start",
+              props.isActive && "text-red-500 active"
+            )}
+            id={"line" + props.rowNo}
+          >
+            {props.data.text}
+          </h1>
+        }
+        <p
           className={classNames(
             "text-xl text-start",
-            props.isActive ? "text-white shadow-xl active" : "text-gray-500"
+            props.isActive && "text-red-500 active"
           )}
         >
-          {props.obj.translation}
-        </span>
+          {props.data.translation}
+        </p>
       </div>
     </div>
   );
 };
 
-export interface TextProps {
-  seek: number;
-  player: Howl;
-}
+export const Text = () => {
+  const {exposedData: state} = useContext(PlayerContext)!;
 
-export const Text = (props: TextProps) => {
   const [curIndex, setCurIndex] = useState(-1);
+  const [sentences, setSentences] = useState<Sentence[]>([]);
 
   const lines = useMemo(() => {
-    return demoScript.map((line) => {
+    return demoSubtitles.map((line, id) => {
       return {
         ...line,
+        id: id++,
         start: line.start / 1000000000,
         end: line.end / 1000000000,
         isSelected: false,
-      };
+      } as Sentence;
     });
   }, []);
 
   useEffect(() => {
     const index = lines.findIndex((line) => {
-      return line.start <= props.seek && props.seek <= line.end;
+      return line.start <= state.seek && state.seek <= line.end;
     });
     setCurIndex(index);
-  }, [props.seek, lines]);
+  }, [state.seek, lines]);
 
   useEffect(() => {
     const active = document.querySelector(`.active`);
@@ -93,14 +113,37 @@ export const Text = (props: TextProps) => {
     }
   }, [curIndex]);
 
+  useEffect(() => {
+    // init sentences
+    setSentences(lines);
+
+    const texts = lines.map((lines) => lines.text);
+
+    const handleTokenize = async () => {
+      const resp = await getTokenize("en", texts);
+
+      // load sentences
+      handleRespWithNotifySuccess(resp, (data) => {
+        const sentences: Sentence[] = data.map((line, i) => {
+          return {...lines[i], tokens: line};
+        })
+        setSentences(sentences);
+      });
+    };
+
+    handleTokenize();
+  }, [lines]);
+
   return (
-    <div className="w-full h-full box-border overflow-y-auto bg-none">
-      <div className="flex flex-col gap-5 ml-4">
-        {lines.map((line, i) => {
-          return (
-            <Line key={i} obj={line} isActive={curIndex == i} lineNo={i} />
-          );
-        })}
+    <div className="w-full h-screen pb-20">
+      <div className="w-full h-full box-border overflow-y-auto bg-none">
+        <div className="flex flex-col gap-5 ml-4">
+          {sentences.map((row, i) => (
+            <>
+              <Sent key={i} data={row} isActive={curIndex == i} rowNo={i} />
+            </>
+          ))}
+        </div>
       </div>
     </div>
   );

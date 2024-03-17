@@ -1,10 +1,12 @@
 import axios from "axios"
 import { log as debugLog} from "./log"
 
+const host = "http://localhost:3000"
+
 // Import axios module for HTTP requests and log function from the current directory index file.
 const instance = axios.create({
-    // baseURL: api + "/api",
-    baseURL: "/api",
+    baseURL: host + "/api",
+    // baseURL: "/api",
     headers: {
         "Content-Type": "application/json;charset=utf-8",
     },

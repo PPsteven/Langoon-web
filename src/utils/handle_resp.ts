@@ -8,7 +8,7 @@ export const handleResp = <T>(
   notify_error: boolean = true,
   notify_success?: boolean
 ) => {
-  if (resp.code === 200) {
+  if (resp.code === 0) {
     // notify_success && notify.success(resp.message)
     notify_success
     success?.(resp.data) // 可选链式调用，如果存在success回调函数，则调用处理

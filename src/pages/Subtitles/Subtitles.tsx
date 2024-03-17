@@ -1,6 +1,6 @@
 import type React from "react";
 
-// import { Text } from "@/components/read/Text";
+import { Text } from "@/components/read/Text";
 import { Control } from "@/components/read/Control";
 
 import usePlayer from "@/hooks/usePlayer";
@@ -16,7 +16,9 @@ const App: React.FC = () => {
 
   return (
     <PlayerContext.Provider value={{sound:sound, exposedData:exposedData}}>
-      {/* <Text/> */}
+      <div className="w-1/2 mx-auto">
+        <Text/>
+      </div>
       <Control/>
     </PlayerContext.Provider>
   );
