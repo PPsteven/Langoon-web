@@ -15,13 +15,13 @@ const urls = [demoMp3]
 
 const App: React.FC = () => {
   const {sound, exposedData} = usePlayer(urls);
-  const [search, setSearch] = useState<string>("123");
+  const [search, setSearch] = useState<string>("");
 
   return (
     <PlayerContext.Provider value={{sound:sound, exposedData:exposedData}}>
       <SearchContext.Provider value={{search:search, setSearch:setSearch}}>
         <Dict>
-          <div className="w-1/2 ml-auto mr-36">
+          <div className="w-1/2 ml-auto mt-12 mr-36">
             <Text/>
           </div>
         </Dict>
