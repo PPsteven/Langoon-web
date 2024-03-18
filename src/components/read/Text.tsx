@@ -41,7 +41,9 @@ const Word = (props: {token: Token}) => {
       isWord(props.token) ?
         <button onClick={handleSearch}>
           <span className={classNames(
-            "underline border-transparent hover:decoration-red-500 hover:text-red-500",
+            "box-border border border-transparent",
+            "hover:border-border hover:border-dashed hover:rounded-sm hover:bg-card",
+            "hover:decoration-red-500 hover:text-red-500",
             "cursor-pointer")}>
             {props.token.text}
           </span>
@@ -70,7 +72,7 @@ const Sent = (props: SentProps) => {
           <h1
             className={classNames(
               "font-bold text-2xl text-start",
-              props.isActive && "text-red-500 active"
+              props.isActive && "text-primary active"
             )}
             id={"line" + props.rowNo}
           >
@@ -86,7 +88,7 @@ const Sent = (props: SentProps) => {
           <h1
             className={classNames(
               "font-bold text-2xl text-start",
-              props.isActive && "text-red-500 active"
+              props.isActive && "text-primary active"
             )}
             id={"line" + props.rowNo}
           >
@@ -95,8 +97,8 @@ const Sent = (props: SentProps) => {
         }
         <p
           className={classNames(
-            "text-xl text-start",
-            props.isActive && "text-red-500 active"
+            "text-xl text-start text-secondary",
+            props.isActive && "text-primary active"
           )}
         >
           {props.data.translation}
