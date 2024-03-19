@@ -11,6 +11,11 @@ import { getTokenize } from "@/utils/api";
 import { handleRespWithNotifySuccess } from "@/utils/handle_resp";
 import { Sentence, Token, isWord } from "@/types/nlp";
 import { Separator } from "@/components/ui/separator";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
 
 interface SentProps {
   data: Sentence;
@@ -155,6 +160,11 @@ export const Text = () => {
   }, [lines]);
 
   return (
+    <ResizablePanelGroup
+      direction="horizontal"
+      className="min-h-[200px] rounded-lg border"
+    >
+      <ResizablePanel defaultSize={75}>
     <div className="w-full h-screen pb-20">
       <div className="w-full h-full box-border overflow-y-auto bg-none">
         <div className="flex flex-col gap-2 ml-4">
@@ -164,5 +174,14 @@ export const Text = () => {
         </div>
       </div>
     </div>
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel defaultSize={25}>
+        <div className="flex h-full items-center justify-center p-6">
+          <span className="font-semibold">TODO...</span>
+        </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
+
   );
 };
