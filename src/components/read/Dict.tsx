@@ -1,32 +1,51 @@
 import { SearchContext } from "@/store";
 import classNames from "classnames";
-import { ReactNode, useContext } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
+import { Input } from "../ui/input";
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export type DictProps = {
   children: ReactNode  
 }
 
-export const Dict = ({children}: DictProps) => {
-  const {search, setSearch} = useContext(SearchContext)!;
+
+export const Dict = () => {
+  const { search } = useContext(SearchContext)!;
 
   return (
-    <div className={classNames("drawer drawer-end",
-     search && search.length > 0 ? "drawer-open": "")}>
-      <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col items-center justify-center">
-        {/* Page content here */}
-        {children}
-        {/* <label htmlFor="my-drawer-2" className="btn btn-primary drawer-button lg:hidden">Open drawer</label> */}
-      </div> 
-      <div className="drawer-side">
-        <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label> 
-        <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-          {/* Sidebar content here */}
-          <h1>{search}</h1>
-          <li><a>Sidebar Item 1</a></li>
-          <li><a>Sidebar Item 2</a></li>
-        </ul>
+    <>
+      <div className="flex w-full max-w-sm items-center space-x-2">
+        <Input type="email" placeholder={search} />
       </div>
-    </div>
-  );
+
+      <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Create project</CardTitle>
+        <CardDescription>Deploy your new project in one-click.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form>
+          <div className="grid w-full items-center gap-4">
+            <div className="flex flex-col space-y-1.5">
+              {/* <Label htmlFor="name">Name</Label> */}
+              <Input id="name" placeholder="Name of your project" />
+            </div>
+          </div>
+        </form>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button variant="outline">Cancel</Button>
+        <Button>Deploy</Button>
+      </CardFooter>
+    </Card>
+    </>
+  )
 };

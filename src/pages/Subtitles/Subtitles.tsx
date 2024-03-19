@@ -20,11 +20,11 @@ const App: React.FC = () => {
   return (
     <PlayerContext.Provider value={{sound:sound, exposedData:exposedData}}>
       <SearchContext.Provider value={{search:search, setSearch:setSearch}}>
-        <Dict>
+        {/* <Dict> */}
           <div className="w-3/4 ml-auto">
             <Text/>
           </div>
-        </Dict>
+        {/* </Dict> */}
       </SearchContext.Provider>
       <Control/>
     </PlayerContext.Provider>
