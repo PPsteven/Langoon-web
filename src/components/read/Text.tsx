@@ -2,7 +2,6 @@ import classNames from "classnames";
 import demoSubtitles from "@/assets/demo.json";
 import { useContext, useEffect, useMemo, useState } from "react";
 
-import { ViewfinderCircleIcon } from "@heroicons/react/24/solid";
 import { PlayerContext, SearchContext } from "@/store";
 
 import "./Text.css";
@@ -22,17 +21,6 @@ interface SentProps {
   isActive: boolean;
   rowNo: number;
 }
-
-const PlayCurrentButton = (props: { toLine: () => void }) => {
-  return (
-    <button
-      className="play-current-btn btn btn-circle btn-ghost bg-transparent"
-      onClick={props.toLine}
-    >
-      <ViewfinderCircleIcon className="h-6 w-6 text-white" />
-    </button>
-  );
-};
 
 const Word = (props: {token: Token}) => {
   const { setSearch } = useContext(SearchContext)!;
@@ -64,7 +52,7 @@ const Word = (props: {token: Token}) => {
 const Sent = (props: SentProps) => {
   const { sound } = useContext(PlayerContext)!;
 
-  const toLine = () => {
+  const skipToLine = () => {
     sound.seek(props.data.start);
   };
 
@@ -73,7 +61,8 @@ const Sent = (props: SentProps) => {
       {/* <div className={"absolute left-0 flex flex-row justify-center ml-1"}>
         <PlayCurrentButton toLine={toLine} />
       </div> */}
-      <div className={classNames("w-full h-full flex flex-col p-3 rounded-lg border",
+      <button onClick={skipToLine} 
+        className={classNames("w-full h-full flex flex-col p-3 rounded-lg border",
         props.isActive && "bg-muted active",
       )}>
         {props.data.tokens ?
@@ -101,7 +90,7 @@ const Sent = (props: SentProps) => {
         >
           {props.data.translation}
         </p>
-      </div>
+      </button>
     </div>
   );
 };
