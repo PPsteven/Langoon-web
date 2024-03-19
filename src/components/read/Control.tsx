@@ -88,7 +88,7 @@ const ProgressBar = () => {
 
 export const Control = () => {
   return (
-    <div className="w-full h-16 fixed left-0 bottom-0">
+    <div className="w-full h-16 fixed left-0 bottom-0 bg-background">
       <div className="relative">
         <div className="absolute left-0 -top-2 w-full h-4">
           <ProgressBar />

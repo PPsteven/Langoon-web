@@ -10,6 +10,7 @@ import "./Text.css";
 import { getTokenize } from "@/utils/api";
 import { handleRespWithNotifySuccess } from "@/utils/handle_resp";
 import { Sentence, Token, isWord } from "@/types/nlp";
+import { Separator } from "@/components/ui/separator";
 
 interface SentProps {
   data: Sentence;
@@ -42,7 +43,7 @@ const Word = (props: {token: Token}) => {
         <button onClick={handleSearch}>
           <span className={classNames(
             "box-border border border-transparent",
-            "hover:border-border hover:border-dashed hover:rounded-sm hover:bg-card",
+            "hover:border-border hover:border-dashed hover:rounded hover:bg-card",
             "hover:decoration-red-500 hover:text-red-500",
             "cursor-pointer")}>
             {props.token.text}
@@ -63,18 +64,16 @@ const Sent = (props: SentProps) => {
   };
 
   return (
-    <div className={"box-border px-14 line"}>
-      <div className={"absolute left-0 flex flex-row justify-center ml-1"}>
+    <div className={"box-border line text-start"}>
+      {/* <div className={"absolute left-0 flex flex-row justify-center ml-1"}>
         <PlayCurrentButton toLine={toLine} />
-      </div>
-      <div className="w-full h-full flex flex-col gap-2 p-1 rounded-sm">
+      </div> */}
+      <div className={classNames("w-full h-full flex flex-col p-3 rounded-lg border",
+        props.isActive && "bg-muted active",
+      )}>
         {props.data.tokens ?
-          <h1
-            className={classNames(
-              "font-bold text-2xl text-start",
-              props.isActive && "text-primary active"
-            )}
-            id={"line" + props.rowNo}
+          <h1 id={"line" + props.rowNo}
+            className={classNames("font-bold")}
           >
             {props.data.tokens.map((token) => {
               return (
@@ -85,21 +84,15 @@ const Sent = (props: SentProps) => {
               )
             })}
           </h1> :
-          <h1
-            className={classNames(
-              "font-bold text-2xl text-start",
-              props.isActive && "text-primary active"
-            )}
-            id={"line" + props.rowNo}
+          <h1 id={"line" + props.rowNo}
+            className={classNames("font-bold")}
           >
             {props.data.text}
           </h1>
         }
+        <Separator />
         <p
-          className={classNames(
-            "text-xl text-start text-secondary",
-            props.isActive && "text-primary active"
-          )}
+          className={classNames("text-xs text-muted-foreground mt-1")}
         >
           {props.data.translation}
         </p>
@@ -164,11 +157,9 @@ export const Text = () => {
   return (
     <div className="w-full h-screen pb-20">
       <div className="w-full h-full box-border overflow-y-auto bg-none">
-        <div className="flex flex-col gap-5 ml-4">
+        <div className="flex flex-col gap-2 ml-4">
           {sentences.map((row, i) => (
-            <>
-              <Sent key={i} data={row} isActive={curIndex == i} rowNo={i} />
-            </>
+            <Sent key={i} data={row} isActive={curIndex == i} rowNo={i} />
           ))}
         </div>
       </div>

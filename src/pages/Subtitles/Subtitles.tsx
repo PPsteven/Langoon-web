@@ -21,7 +21,7 @@ const App: React.FC = () => {
     <PlayerContext.Provider value={{sound:sound, exposedData:exposedData}}>
       <SearchContext.Provider value={{search:search, setSearch:setSearch}}>
         <Dict>
-          <div className="w-1/2 ml-auto mt-12 mr-36">
+          <div className="w-1/2 mx-auto">
             <Text/>
           </div>
         </Dict>
