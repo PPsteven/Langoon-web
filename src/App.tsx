@@ -1,13 +1,19 @@
-import Subtitles from './pages/Subtitles/Subtitles'
+import { lazy } from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import "./styles/global.css"
+
+// Import lazy pages
+const Subtitles = lazy(() => import('./pages/Subtitles/Subtitles'))
 
 function App() {
 
   return (
     <div className="theme-nord light">
-      <div className="w-full h-full mx-auto overflow-hidden">
-        <Subtitles />
-      </div>
+      <Router>
+        <Routes>
+          <Route path="/subtitles" element={<Subtitles />} />
+        </Routes>
+      </Router>
     </div>
   )
 }
