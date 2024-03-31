@@ -1,9 +1,4 @@
-import { 
-  Play,
-  CirclePause, 
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-react';
+import { PlayIcon, PauseIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/16/solid';
 
 import { Slider } from "@/components/ui/slider";
 import { formatTime } from "../../utils/helper";
@@ -11,9 +6,9 @@ import { useContext, useEffect, useState } from "react";
 import { PlayerContext } from "@/store";
 
 const Buttons = () => {
-  const { sound: player, exposedData: state } = useContext(PlayerContext)!;
+  const { sound: player, exposedData: state, sentences, curSentenceId } = useContext(PlayerContext)!;
 
-  const handlePlay = () => {
+  const playMedia = () => {
     if (state.status === "play") {
       player.pause();
     } else if (state.status === "pause") {
@@ -21,23 +16,28 @@ const Buttons = () => {
     }
   }
 
+  const switchNextSentence = (pre = false) => {
+    const curIndex = pre ? curSentenceId - 1 : curSentenceId + 1;
+    player.seek(sentences[curIndex].start)
+  }
+
   return (
-    <div className="flex justify-center">
-      <button className="btn btn-circle btn-ghost bg-transparent">
-        <ChevronsLeft className="h-6 w-6" />
+    <div className="flex justify-center gap-4">
+      <button onClick={()=>switchNextSentence(true)}>
+        <BackwardIcon className="h-6 w-6 text-gray-500" />
       </button>
       <button
-        className="btn btn-circle btn-ghost bg-transparent"
-        onClick={handlePlay}
+        className="btn btn-circle btn-ghost shadow-xl"
+        onClick={playMedia}
       >
         {state.status == "play" ? (
-          <CirclePause className="h-10 w-10" />
+          <PauseIcon className='h-6 w-6'/>
         ) : (
-          <Play className="h-10 w-10" />
+          <PlayIcon className='h-6 w-6'/>
         )}
       </button>
-      <button className="btn btn-circle btn-ghost bg-transparent">
-        <ChevronsRight className="h-6 w-6" />
+      <button onClick={()=>switchNextSentence()}>
+        <ForwardIcon className="h-6 w-6 text-gray-500" />
       </button>
     </div>
   );
@@ -88,13 +88,13 @@ const ProgressBar = () => {
 
 export const Control = () => {
   return (
-    <div className="w-full h-16 fixed left-0 bottom-0 bg-background">
+    <div className="w-full h-16 sticky left-0 bottom-0 bg-base-100">
       <div className="relative">
         <div className="absolute left-0 -top-2 w-full h-4">
           <ProgressBar />
         </div>
       </div>
-      <div className="h-full mt-3">
+      <div className="h-full my-3">
         <Buttons />
       </div>
     </div>

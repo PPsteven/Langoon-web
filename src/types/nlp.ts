@@ -29,3 +29,16 @@ export interface Sentence {
     end: number;
     tokens?: Token[];
 }
+
+export interface WordDict {
+    pron: string;
+    original: string;
+    meaning: string;
+    definition: string;
+    explain: string;
+    examples: string[];
+    others: string[];
+    class: string;
+}
+
+export type WordDictResp = Resp<WordDict>;

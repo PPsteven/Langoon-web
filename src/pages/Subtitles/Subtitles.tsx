@@ -1,36 +1,32 @@
 import type React from "react";
-
-import { Text } from "@/components/read/Text";
-import { Control } from "@/components/read/Control";
-
-import usePlayer from "@/hooks/usePlayer";
-import { PlayerContext, SearchContext } from "@/store";
-
-import demoMp3 from "@/assets/demo.mp3"
-import { Dict } from "@/components/read/Dict";
 import { useState } from "react";
+import { Text } from "@/components/read/Text";
+import { Dict } from "@/components/read/Dict";
+import { Control } from "@/components/read/Control";
 import { Header } from "@/components/layout/Header";
-
-
-const urls = [demoMp3]
+import { PlayerContextProvider } from "@/store";
 
 const App: React.FC = () => {
-  const {sound, exposedData} = usePlayer(urls);
-  const [search, setSearch] = useState<string>("");
+  const [searchWord, setSearchWord] = useState("");
+
+  const search = (word: string) => {
+    setSearchWord(word);
+  };
 
   return (
-      <div className="w-full h-full mx-auto overflow-hidden">
-    <PlayerContext.Provider value={{sound:sound, exposedData:exposedData}}>
-      <SearchContext.Provider value={{search:search, setSearch:setSearch}}>
-        <Header/>
-        {/* <Dict> */}
-          <div className="w-3/4 ml-auto">
-            <Text/>
+    <div className="w-full h-screen">
+      <PlayerContextProvider>
+        <div className="h-full flex flex-col">
+          <Header />
+          <div className="w-full bg-white flex justify-center grow overflow-y-auto">
+            <div className="w-1/2 flex justify-center">
+              <Text search={search} />
+            </div>
+            <Dict word={searchWord} />
           </div>
-        {/* </Dict> */}
-      </SearchContext.Provider>
-      <Control/>
-    </PlayerContext.Provider>
+          <Control />
+        </div>
+      </PlayerContextProvider>
     </div>
   );
 };

@@ -9,17 +9,15 @@ export interface PlayerProps {
 }
 
 export type State = {
-  playIndex: number;
-  seek: number;
-  duration: number;
-  percent: number;
-  status: "play" | "pause" | "loading";
-  err?: string;
+  seek: number; // 当前播放位置
+  duration: number; // 播放总时长
+  percent: number; // 播放进度百分比
+  status: "play" | "pause" | "loading"; // 播放状态
+  err?: string; // 错误信息
 };
 
 export default function usePlayer(urls: string[]) {
   const [state, setState] = useState<State>({
-    playIndex: 0,
     seek: 0,
     duration: 0,
     percent: 0,

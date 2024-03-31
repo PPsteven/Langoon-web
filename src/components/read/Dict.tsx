@@ -1,51 +1,45 @@
-import { SearchContext } from "@/store";
+import { useEffect, useState } from "react";
 import classNames from "classnames";
-import { ReactNode, useContext, useEffect, useState } from "react";
-import { Input } from "../ui/input";
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+// import { getWord } from "@/utils/api";
+// import { handleRespWithNotifySuccess } from "@/utils/handle_resp";
+// import { WordDict } from "@/types/nlp";
+import { X as CloseIcon } from "lucide-react";
 
-export type DictProps = {
-  children: ReactNode  
+interface DictPropsType {
+  /** @name 分词单词*/
+  word: string;
 }
 
+export const Dict = (props: DictPropsType) => {
+  const [open, setOpen] = useState(false);
+  const { word } = props;
 
-export const Dict = () => {
-  const { search } = useContext(SearchContext)!;
+  const close = () => {
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    word && setOpen(true);
+  }, [word]);
 
   return (
-    <>
-      <div className="flex w-full max-w-sm items-center space-x-2">
-        <Input type="email" placeholder={search} />
+    <div
+      className={classNames(
+        "w-[300px] h-full fixed right-0 z-10 bg-white p-4",
+        open ? "block" : "hidden"
+      )}
+    >
+      <div className="flex flex-col">
+        <h1 className="flex items-center text-xl font-bold p-2">
+          <button onClick={close}>
+            <CloseIcon />
+          </button>
+          词典
+        </h1>
+        <div className="card bg-base-100 p-2">
+          <div className="card-title p-2">{word}</div>
+        </div>
       </div>
-
-      <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Create project</CardTitle>
-        <CardDescription>Deploy your new project in one-click.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form>
-          <div className="grid w-full items-center gap-4">
-            <div className="flex flex-col space-y-1.5">
-              {/* <Label htmlFor="name">Name</Label> */}
-              <Input id="name" placeholder="Name of your project" />
-            </div>
-          </div>
-        </form>
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="outline">Cancel</Button>
-        <Button>Deploy</Button>
-      </CardFooter>
-    </Card>
-    </>
-  )
+    </div>
+  );
 };

@@ -1,5 +1,5 @@
 // import { LineObj } from "@/store/media";
-import { TokenResp } from "@/types/nlp";
+import { TokenResp, WordDictResp } from "@/types/nlp";
 
 import { r } from "@/utils/requests";
 
@@ -33,5 +33,16 @@ export const getTokenize = (
     return r.post("/nlp/tokenize", {
         "source_lang_code": langCode,
         "text": texts
+    })
+}
+
+export const getWord = (
+    word: string,
+    sentence: string,
+): Promise<WordDictResp>=> {
+    return r.post("/word/" + word, {
+        "source_lang_code": "en",
+        "target_lang_code": "zh-CN",
+        "sentence": sentence,
     })
 }

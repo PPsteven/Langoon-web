@@ -2,135 +2,153 @@ import classNames from "classnames";
 import demoSubtitles from "@/assets/demo.json";
 import { useContext, useEffect, useMemo, useState } from "react";
 
-import { PlayerContext, SearchContext } from "@/store";
+import { PlayerContext } from "@/store";
 
 import "./Text.css";
 // import { useLoading } from "@/hooks/useFetch";
 import { getTokenize } from "@/utils/api";
 import { handleRespWithNotifySuccess } from "@/utils/handle_resp";
-import { Sentence, Token, isWord } from "@/types/nlp";
-import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import { Dict } from "./Dict";
+import type { Sentence, Token } from "@/types/nlp";
+import { isWord } from "@/types/nlp";
+
+interface WordProps {
+  token: Token;
+  onClick: (w: string) => void;
+}
+
+const Word = (props: WordProps) => {
+  const { onClick, token } = props;
+
+  const search = () => {
+    onClick(token.text);
+  };
+
+  return (
+    <div className="text-base font-sans">
+      {isWord(token) ? (
+        <button onClick={search}>
+          <span
+            className={classNames(
+              "box-border border border-transparent rounded cursor-pointer",
+              "hover:bg-accent hover:shadow-lg"
+            )}
+          >
+            {token.text}
+          </span>
+        </button>
+      ) : (
+        <span>{token.text}</span>
+      )}
+    </div>
+  );
+};
 
 interface SentProps {
   data: Sentence;
   isActive: boolean;
   rowNo: number;
-}
-
-const Word = (props: {token: Token}) => {
-  const { setSearch } = useContext(SearchContext)!;
-
-  const handleSearch = () => {
-    setSearch(props.token.text);
-  }
-
-  return (
-    <>
-      {
-      isWord(props.token) ?
-        <button onClick={handleSearch}>
-          <span className={classNames(
-            "box-border border border-transparent",
-            "hover:border-border hover:border-dashed hover:rounded hover:bg-card",
-            "hover:decoration-red-500 hover:text-red-500",
-            "cursor-pointer")}>
-            {props.token.text}
-          </span>
-        </button>
-         :
-        <>{props.token.text}</>
-      }
-    </>
-  )
+  search: (s: string) => void;
 }
 
 const Sent = (props: SentProps) => {
   const { sound } = useContext(PlayerContext)!;
+  const { search, data: sentenceData } = props;
 
   const skipToLine = () => {
     sound.seek(props.data.start);
   };
 
+  const wordClick = (word: string) => {
+    search(word);
+  };
+
   return (
     <div className={"box-border line text-start"}>
       <div className="flex gap-1 items-end">
-        <button onClick={skipToLine} 
-        className={classNames("w-full h-full flex flex-col p-3 rounded-lg border",
-        props.isActive && "bg-muted active",
-      )}>
-        {props.data.tokens ?
-          <div id={"line" + props.rowNo}
-            className={classNames("font-bold")}
-          >
-            {props.data.tokens.map((token) => {
-              return (
-                <>
-                  <Word token={token}/>
-                  {token.whitespace}
-                </>
-              )
-            })}
-          </div> :
-          <h1 id={"line" + props.rowNo}
-            className={classNames("font-bold")}
-          >
-            {props.data.text}
-          </h1>
-        }
-        <p
-          className={classNames("text-xs text-muted-foreground mt-1")}
+        <button
+          onClick={skipToLine}
+          className={classNames(
+            "w-full flex flex-col p-3 rounded-sm",
+            "hover:bg-base-200",
+            props.isActive && "bg-base-200 active"
+          )}
         >
-          {props.data.translation}
-        </p>
-      </button>
+          {sentenceData.tokens ? (
+            <div
+              id={"line" + props.rowNo}
+              className={classNames("font-bold whitespace-pre flex flex-wrap")}
+            >
+              {sentenceData.tokens.map((token) => {
+                return (
+                  <>
+                    <Word token={token} onClick={wordClick} />
+                    <div>{token.whitespace}</div>
+                  </>
+                );
+              })}
+            </div>
+          ) : (
+            <h1 id={"line" + props.rowNo} className={classNames("font-bold")}>
+              {sentenceData.text}
+            </h1>
+          )}
+          <p className={classNames("text-xl text-muted-foreground mt-1")}>
+            {sentenceData.translation}
+          </p>
+        </button>
       </div>
     </div>
   );
 };
 
-export const Text = () => {
-  const {exposedData: state} = useContext(PlayerContext)!;
+interface TextProps {
+  search: (word: string) => void;
+}
 
-  const [curIndex, setCurIndex] = useState(-1);
-  const [sentences, setSentences] = useState<Sentence[]>([]);
+export const Text = (props: TextProps) => {
+  const {
+    exposedData: progress,
+    sentences,
+    setSentences,
+    curSentenceId,
+    setCurSentenceId
+  } = useContext(PlayerContext);
 
   const lines = useMemo(() => {
-    return demoSubtitles.map((line, id) => {
-      return {
-        ...line,
-        id: id++,
-        start: line.start / 1000000000,
-        end: line.end / 1000000000,
-        isSelected: false,
-      } as Sentence;
-    });
+    return demoSubtitles
+      .map((line, id) => {
+        return {
+          ...line,
+          text: line.text.trim(),
+          id: id++,
+          start: line.start / 1000000000,
+          end: line.end / 1000000000,
+          isSelected: false,
+        } as Sentence;
+      })
+      .filter((line) => line.text !== "");
   }, []);
 
   useEffect(() => {
     const index = lines.findIndex((line) => {
-      return line.start <= state.seek && state.seek <= line.end;
+      return line.start <= progress.seek && progress.seek <= line.end;
     });
-    setCurIndex(index);
-  }, [state.seek, lines]);
+    setCurSentenceId(index);
+  }, [progress.seek, lines]);
 
   useEffect(() => {
-    const active = document.querySelector(`.active`);
-    if (active) {
-      active.scrollIntoView({ behavior: "smooth", block: "center" });
+    const activeDom = document.querySelector(`.active`);
+    if (activeDom) {
+      activeDom.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [curIndex]);
+  }, [curSentenceId]);
 
   useEffect(() => {
     // init sentences
     setSentences(lines);
 
-    const texts = lines.map((lines) => lines.text);
+    // remove empty lines
+    const texts = lines.map((line) => line.text.trim());
 
     const handleTokenize = async () => {
       const resp = await getTokenize("en", texts);
@@ -138,8 +156,8 @@ export const Text = () => {
       // load sentences
       handleRespWithNotifySuccess(resp, (data) => {
         const sentences: Sentence[] = data.map((line, i) => {
-          return {...lines[i], tokens: line};
-        })
+          return { ...lines[i], tokens: line };
+        });
         setSentences(sentences);
       });
     };
@@ -148,28 +166,18 @@ export const Text = () => {
   }, [lines]);
 
   return (
-    <ResizablePanelGroup
-      direction="horizontal"
-      className="min-h-[200px] rounded-lg border"
-    >
-      <ResizablePanel defaultSize={75}>
-    <div className="w-full h-screen pb-20 pr-20">
-      <div className="w-full h-full box-border overflow-y-auto bg-none">
-        <div className="flex flex-col gap-2 ml-4">
-          {sentences.map((row, i) => (
-            <Sent key={i} data={row} isActive={curIndex == i} rowNo={i} />
-          ))}
-        </div>
+    <div className="card h-full w-full max-w-xl bg-base-100">
+      <div className="h-full flex flex-col overflow-y-auto">
+        {(sentences || []).map((sentence, i) => (
+          <Sent
+            key={sentence.text + i}
+            data={sentence}
+            isActive={curSentenceId == i}
+            rowNo={i}
+            search={props.search}
+          />
+        ))}
       </div>
     </div>
-      </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={25}>
-        <div className="h-full p-6">
-          <Dict />
-        </div>
-      </ResizablePanel>
-    </ResizablePanelGroup>
-
   );
 };
