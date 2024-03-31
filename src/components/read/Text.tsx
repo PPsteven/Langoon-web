@@ -10,6 +10,7 @@ import { getTokenize } from "@/utils/api";
 import { handleRespWithNotifySuccess } from "@/utils/handle_resp";
 import type { Sentence, Token } from "@/types/nlp";
 import { isWord } from "@/types/nlp";
+import React from "react";
 
 interface WordProps {
   token: Token;
@@ -105,7 +106,7 @@ interface TextProps {
   search: (word: string) => void;
 }
 
-export const Text = (props: TextProps) => {
+export const Text = React.memo((props: TextProps) => {
   const {
     exposedData: progress,
     sentences,
@@ -167,7 +168,7 @@ export const Text = (props: TextProps) => {
 
   return (
     <div className="card h-full w-full max-w-xl bg-base-100">
-      <div className="h-full flex flex-col overflow-y-auto">
+      <div className="h-full flex flex-col overflow-y-auto" id="text-container">
         {(sentences || []).map((sentence, i) => (
           <Sent
             key={sentence.text + i}
@@ -180,4 +181,4 @@ export const Text = (props: TextProps) => {
       </div>
     </div>
   );
-};
+})
